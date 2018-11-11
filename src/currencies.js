@@ -1,5 +1,6 @@
 var XRPValidator = require('./ripple_validator')
 var ETHValidator = require('./ethereum_validator')
+var AIONValidator = require('./aion_validator')
 var BTCValidator = require('./bitcoin_validator')
 var SCValidator = require('./siacoin_validator')
 var XMRValidator = require('./monero_validator')
@@ -261,6 +262,11 @@ var CURRENCIES = [
     symbol: 'lbc',
     addressTypes: { prod: ['55'], testnet: [] },
     validator: BTCValidator
+  },
+  {
+    name: 'aion',
+    symbol: 'aion',
+    validator: AIONValidator
   }
 ]
 

@@ -428,6 +428,13 @@ describe('WAValidator.validate()', function() {
       valid('bK2uEVn6UuwjCTUZ1Dfj5HhWYi9BtqZDDm', 'lbry')
     })
 
+    it('should return true for correct aion addresses', function() {
+      valid('a02fc31937e879a0a6a558898612281872340259061811c4ba3597509f915eda', 'aion')
+      valid('a0e70f74b11819e8ca6c4725cc92c901055d40685bc9bc2c165b9f53c9d17298', 'aion')
+      valid('0xa0cc95afc878059544c72d71577d016181b252c91c26ea46883c999ab3f8aa41', 'aion')
+      valid('0xa0859a061c1bc863ebafe49203dca8196c7deba26aa7f86be80728423e8da21c', 'aion')
+    })
+
     it('should return true for correct Bankex addresses', function() {
       valid('0xeac39e1bc802baae3d4b9cb518f3f60374bbad6c', 'bankex')
       valid('0x45245bc59219eeaaf6cd3f382e078a461ff9de7b', 'BKX')
@@ -689,6 +696,15 @@ describe('WAValidator.validate()', function() {
     it('should return false for incorrect lbry addresses', function() {
       commonTests('lbry')
       invalid('ffe1308c044ade30392a0cdc1fd5a4dbe94f9616a95faf888ed36123d9e711557aa497530372')
+    })
+
+    it('should return false for incorrect aion addresses', function() {
+      commonTests('aion')
+      invalid('6xAff4d6793F584a473348EbA058deb8caad77a288', 'aion')
+      invalid('0x02fcd51aAbB814FfFe17908fbc888A8975D839A5', 'aion')
+      invalid('0XD1220A0CF47C7B9BE7A2E6BA89F429762E7B9ADB', 'aion')
+      invalid('aFf4d6793f584a473348ebA058deb8caad77a2885', 'aion')
+      invalid('0xff4d6793F584a473', 'aion')
     })
   })
 })

@@ -5396,6 +5396,34 @@ SafeBuffer.allocUnsafeSlow = function (size) {
 }
 
 },{"buffer":7}],101:[function(require,module,exports){
+var cryptoUtils = require('./crypto/utils')
+
+module.exports = {
+  isValidAddress: function(address) {
+    if (address.length === 66) {
+      if (!/^0x[0-9a-fA-F]{64}$/.test(address)) {
+        // Check if it has the basic requirements of an address
+        return false
+      }
+      return this.verifyChecksum(address)
+    }
+    if (address.length !== 64) {
+      return false
+    }
+
+    // Otherwise check each case
+    return this.verifyChecksum(address)
+  },
+  verifyChecksum: function(address) {
+    // Check each case
+    address = address.replace('0x', '')
+
+    var prefix = address.slice(0, 2).toLowerCase()
+    return prefix === 'a0'
+  }
+}
+
+},{"./crypto/utils":110}],102:[function(require,module,exports){
 var base58 = require('./crypto/base58');
 var segwit = require('./crypto/segwit_addr');
 var cryptoUtils = require('./crypto/utils');
@@ -5472,7 +5500,7 @@ module.exports = {
     }
 };
 
-},{"./crypto/base58":102,"./crypto/segwit_addr":107,"./crypto/utils":109}],102:[function(require,module,exports){
+},{"./crypto/base58":103,"./crypto/segwit_addr":108,"./crypto/utils":110}],103:[function(require,module,exports){
 // Base58 encoding/decoding
 // Originally written by Mike Hearn for BitcoinJ
 // Copyright (c) 2011 Google Inc
@@ -5520,7 +5548,7 @@ module.exports = {
     }
 };
 
-},{}],103:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 // Copyright (c) 2017 Pieter Wuille
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -5638,7 +5666,7 @@ function decode (bechString) {
   return {hrp: hrp, data: data.slice(0, data.length - 6)};
 }
 
-},{}],104:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 /*
 	JavaScript BigInteger library version 0.9.1
 	http://silentmatt.com/biginteger/
@@ -7089,7 +7117,7 @@ function decode (bechString) {
     
     exports.JSBigInt = BigInteger; // exports.BigInteger changed to exports.JSBigInt
     })(typeof exports !== 'undefined' ? exports : this);
-},{}],105:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 
@@ -7280,7 +7308,7 @@ Blake256.prototype.digest = function (encoding) {
 
 module.exports = Blake256;
 }).call(this,require("buffer").Buffer)
-},{"buffer":7}],106:[function(require,module,exports){
+},{"buffer":7}],107:[function(require,module,exports){
 var JSBigInt = require('./biginteger')['JSBigInt'];
 
 /**
@@ -7507,7 +7535,7 @@ var cnBase58 = (function () {
     return b58;
 })();
 module.exports = cnBase58;
-},{"./biginteger":104}],107:[function(require,module,exports){
+},{"./biginteger":105}],108:[function(require,module,exports){
 // Copyright (c) 2017 Pieter Wuille
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -7603,7 +7631,7 @@ module.exports = {
     isValidAddress: isValidAddress,
 };
 
-},{"./bech32":103}],108:[function(require,module,exports){
+},{"./bech32":104}],109:[function(require,module,exports){
 (function (process,global){
 /**
  * [js-sha3]{@link https://github.com/emn178/js-sha3}
@@ -8247,7 +8275,7 @@ var f = function (s) {
 module.exports = methods;
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":99}],109:[function(require,module,exports){
+},{"_process":99}],110:[function(require,module,exports){
 var jsSHA = require('jssha/src/sha256')
 var Blake256 = require('./blake256')
 var keccak256 = require('./sha3')['keccak256']
@@ -8294,9 +8322,10 @@ module.exports = {
   }
 }
 
-},{"./blake256":105,"./sha3":108,"blakejs":5,"jssha/src/sha256":9}],110:[function(require,module,exports){
+},{"./blake256":106,"./sha3":109,"blakejs":5,"jssha/src/sha256":9}],111:[function(require,module,exports){
 var XRPValidator = require('./ripple_validator')
 var ETHValidator = require('./ethereum_validator')
+var AIONValidator = require('./aion_validator')
 var BTCValidator = require('./bitcoin_validator')
 var SCValidator = require('./siacoin_validator')
 var XMRValidator = require('./monero_validator')
@@ -8558,6 +8587,11 @@ var CURRENCIES = [
     symbol: 'lbc',
     addressTypes: { prod: ['55'], testnet: [] },
     validator: BTCValidator
+  },
+  {
+    name: 'aion',
+    symbol: 'aion',
+    validator: AIONValidator
   }
 ]
 
@@ -8574,43 +8608,45 @@ module.exports = {
   }
 }
 
-},{"./bitcoin_validator":101,"./ethereum_validator":111,"./monero_validator":112,"./ripple_validator":113,"./siacoin_validator":114}],111:[function(require,module,exports){
-var cryptoUtils = require('./crypto/utils');
+},{"./aion_validator":101,"./bitcoin_validator":102,"./ethereum_validator":112,"./monero_validator":113,"./ripple_validator":114,"./siacoin_validator":115}],112:[function(require,module,exports){
+var cryptoUtils = require('./crypto/utils')
 
 module.exports = {
-    isValidAddress: function (address) {
-        if (!/^0x[0-9a-fA-F]{40}$/.test(address)) {
-            // Check if it has the basic requirements of an address
-            return false;
-        }
-
-        if (/^0x[0-9a-f]{40}$/.test(address) || /^0x?[0-9A-F]{40}$/.test(address)) {
-            // If it's all small caps or all all caps, return true
-            return true;
-        }
-
-        // Otherwise check each case
-        return this.verifyChecksum(address);
-    },
-    verifyChecksum: function (address) {
-        // Check each case
-        address = address.replace('0x','');
-
-        var addressHash = cryptoUtils.keccak256(address.toLowerCase());
-
-        for (var i = 0; i < 40; i++ ) {
-            // The nth letter should be uppercase if the nth digit of casemap is 1
-            if ((parseInt(addressHash[i], 16) > 7 && address[i].toUpperCase() !== address[i]) ||
-                (parseInt(addressHash[i], 16) <= 7 && address[i].toLowerCase() !== address[i])) {
-                return false;
-            }
-        }
-
-        return true;
+  isValidAddress: function(address) {
+    if (!/^0x[0-9a-fA-F]{40}$/.test(address)) {
+      // Check if it has the basic requirements of an address
+      return false
     }
-};
 
-},{"./crypto/utils":109}],112:[function(require,module,exports){
+    if (/^0x[0-9a-f]{40}$/.test(address) || /^0x?[0-9A-F]{40}$/.test(address)) {
+      // If it's all small caps or all all caps, return true
+      return true
+    }
+
+    // Otherwise check each case
+    return this.verifyChecksum(address)
+  },
+  verifyChecksum: function(address) {
+    // Check each case
+    address = address.replace('0x', '')
+
+    var addressHash = cryptoUtils.keccak256(address.toLowerCase())
+
+    for (var i = 0; i < 40; i++) {
+      // The nth letter should be uppercase if the nth digit of casemap is 1
+      if (
+        (parseInt(addressHash[i], 16) > 7 && address[i].toUpperCase() !== address[i]) ||
+        (parseInt(addressHash[i], 16) <= 7 && address[i].toLowerCase() !== address[i])
+      ) {
+        return false
+      }
+    }
+
+    return true
+  }
+}
+
+},{"./crypto/utils":110}],113:[function(require,module,exports){
 var cryptoUtils = require('./crypto/utils')
 var cnBase58 = require('./crypto/cnBase58')
 
@@ -8674,7 +8710,7 @@ module.exports = {
   }
 }
 
-},{"./crypto/cnBase58":106,"./crypto/utils":109}],113:[function(require,module,exports){
+},{"./crypto/cnBase58":107,"./crypto/utils":110}],114:[function(require,module,exports){
 var cryptoUtils = require('./crypto/utils');
 var baseX = require('base-x');
 
@@ -8704,7 +8740,7 @@ module.exports = {
     }
 };
 
-},{"./crypto/utils":109,"base-x":1}],114:[function(require,module,exports){
+},{"./crypto/utils":110,"base-x":1}],115:[function(require,module,exports){
 var cryptoUtils = require('./crypto/utils')
 var isEqual = require('lodash/isEqual')
 
@@ -8735,7 +8771,7 @@ module.exports = {
   }
 }
 
-},{"./crypto/utils":109,"lodash/isEqual":90}],115:[function(require,module,exports){
+},{"./crypto/utils":110,"lodash/isEqual":90}],116:[function(require,module,exports){
 var currencies = require('./currencies');
 
 var DEFAULT_CURRENCY_NAME = 'bitcoin';
@@ -8752,5 +8788,5 @@ module.exports = {
     },
 };
 
-},{"./currencies":110}]},{},[115])(115)
+},{"./currencies":111}]},{},[116])(116)
 });
