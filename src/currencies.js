@@ -4,6 +4,8 @@ var AIONValidator = require('./aion_validator')
 var BTCValidator = require('./bitcoin_validator')
 var SCValidator = require('./siacoin_validator')
 var XMRValidator = require('./monero_validator')
+var XRPValidator = require('./ripple_validator')
+var XMRValidator = require('./monero_validator')
 
 // defines P2PKH and P2SH address types for standard (prod) and testnet networks
 var CURRENCIES = [
@@ -95,6 +97,7 @@ var CURRENCIES = [
     name: 'vertcoin',
     symbol: 'vtc',
     addressTypes: { prod: ['0x', '47'], testnet: ['6f', 'c4'] },
+    segwitHrp: 'vtc',
     validator: BTCValidator
   },
   {
@@ -225,7 +228,7 @@ var CURRENCIES = [
   {
     name: 'qtum',
     symbol: 'qtum',
-    addressTypes: { prod: ['3a', '32'], testnet: ['6f', 'c4'] },
+    addressTypes: { prod: ['3a', '32'], testnet: ['78', '6e'] },
     validator: BTCValidator
   },
   {
@@ -271,7 +274,7 @@ var CURRENCIES = [
 ]
 
 module.exports = {
-  getByNameOrSymbol: function(currencyNameOrSymbol) {
+  getByNameOrSymbol: function (currencyNameOrSymbol) {
     var nameOrSymbol = currencyNameOrSymbol.toLowerCase()
     for (var i = 0; i < CURRENCIES.length; i++) {
       var currency = CURRENCIES[i]
